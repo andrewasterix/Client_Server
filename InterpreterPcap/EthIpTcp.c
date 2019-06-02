@@ -26,7 +26,7 @@ void main(int argc, char *argv[]){
 	unsigned int first_ts_sec, first_ts_usec;
 
 	if (argc!= 2) {
-		fprintf(stderr, "Usage: %s file_name", argv[0]);
+		fprintf(stderr, "Usage: %s file_name\n", argv[0]);
 		exit(-1);
 	}	
 
@@ -103,53 +103,48 @@ void main(int argc, char *argv[]){
 			c = getc(f) ;
 		}
 		if (ipulp == 0x6) {
-// printf("\n iter %d **** %d %d \n", iter, spn, dpn);
-// getchar();
 
-			if ((spn == 3500) || (dpn == 3500)) {
-    				diff_sec = ts_sec-first_ts_sec;
-    				diff_usec = ts_usec-first_ts_usec;
-				et_millis=((float) (diff_sec*1000000+diff_usec))/((float) 1000);
-				printf ("Iter. %d: Offset in msecs: %.2f\n", iter, et_millis);
+			diff_sec = ts_sec-first_ts_sec;
+    		diff_usec = ts_usec-first_ts_usec;
+			et_millis=((float) (diff_sec*1000000+diff_usec))/((float) 1000);
+			printf ("Iter. %d: Offset in msecs: %.2f\n", iter, et_millis);
 
-				printf("DMAC: ");
+			printf("DMAC: ");
 		
-				for (i=0; i<6;i++) { 
-					printf("%02x ", dmac[i]);
-				}
-				printf(" ");
-				printf("SMAC: ");
-				for (i=0; i<6;i++) { 
-					printf("%02x ", smac[i]);
-				}
-				printf(" ");
-				printf("ETHERTYPE: ");
-				for (i=0; i<2;i++) { 
-					printf("%02x ", ethertype[i]);
-				}
-				printf("\n");
-				printf ("IP Version Number: %02x ", ipvn);
-				printf ("IP Header Length %02x ", ihl);
-				printf ("IP TTL: %d ", ipttl);
-				printf ("IP Upper Layer Protocol: %02x\n", ipulp);
-				printf("IP Source Address: ");
-				for (i=0; i<4;i++) { 
-					printf("%d.", sip[i]);
-				}
-				printf(" ");
-				printf("IP Destination Address: ");
-				for (i=0; i<4;i++) { 
-					printf("%d.", dip[i]);
-				}
-				printf("\n");
-				if (ipulp == 0x06) {
-					printf("TCP Source Port: %d ", spn);
-					printf("TCP Destin.  Port: %d\n", dpn);
-				}
-			printf("Next ?"); getchar();
+			for (i=0; i<6;i++) { 
+				printf("%02x ", dmac[i]);
 			}
+			printf(" ");
+			printf("SMAC: ");
+			for (i=0; i<6;i++) { 
+				printf("%02x ", smac[i]);
+			}
+			printf(" ");
+			printf("ETHERTYPE: ");
+			for (i=0; i<2;i++) { 
+				printf("%02x ", ethertype[i]);
+			}
+			printf("\n");
+			printf ("IP Version Number: %02x ", ipvn);
+			printf ("IP Header Length %02x ", ihl);
+			printf ("IP TTL: %d ", ipttl);
+			printf ("IP Upper Layer Protocol: %02x\n", ipulp);
+			printf("IP Source Address: ");
+			for (i=0; i<4;i++) { 
+				printf("%d.", sip[i]);
+			}
+			printf(" ");
+			printf("IP Destination Address: ");
+			for (i=0; i<4;i++) { 
+				printf("%d.", dip[i]);
+			}
+			printf("\n");
+			if (ipulp == 0x06) {
+				printf("TCP Source Port: %d ", spn);
+				printf("TCP Destin.  Port: %d\n", dpn);
+			}
+			printf("Next ?"); getchar();
 		}
-	
 	iter++;
 	}
 }
