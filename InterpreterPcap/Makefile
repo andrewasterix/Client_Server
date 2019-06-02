@@ -3,10 +3,10 @@ CFlags ?= -O3 -std=gnu99
 
 .PHONY: all clean
 
-EthIp.o: EthIp.c 
+EthIp: EthIp.c 
 	$(CC) $(CFlags) -c $< -o $@ -lm
 
-all: EthIp.o
+all: EthIp
 
-clean: 
-	rm -f *.o
+clean:
+	rm -f EthIp

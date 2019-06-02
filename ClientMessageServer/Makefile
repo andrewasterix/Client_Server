@@ -3,13 +3,14 @@ CFlags ?= -O3 -std=gnu99
 
 .PHONY: all clean
 
-client.o: ClientSentMessage.c
+client: ClientSentMessage.c
 	$(CC) $(CFlags) -c $< -o $@ -lm
 
-server.o: ServerRecivesMessage.c
+server: ServerRecivesMessage.c
 	$(CC) $(CFlags) -c $< -o $@ -lm
 
-all: client.o server.o
+all: client server
 
 clean:
-	rm -f *.o
+	rm -f server
+	rm -f client
