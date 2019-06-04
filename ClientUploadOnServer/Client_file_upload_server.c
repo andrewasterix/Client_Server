@@ -46,7 +46,7 @@ int main(int argc, char *argv[]){
         return -1; 
     } 
 
-    FILE *fp = fopen("text.txt", "r");
+    FILE *fp = fopen("text.txt", "rb");
     if(fp == NULL){
         perror("File");
         return 2;

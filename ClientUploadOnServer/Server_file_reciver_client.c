@@ -56,7 +56,7 @@ int main(int argc, char *argv[]){
         perror("Accept");
     }
         
-    FILE* fp = fopen( "text_received.txt", "w");
+    FILE* fp = fopen( "text_received.jpg", "wb");
     tot=0;
     if(fp != NULL){
         while( (b = recv(confd, buff, 1024,0))> 0 ) {
