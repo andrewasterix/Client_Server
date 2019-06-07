@@ -94,7 +94,7 @@ int main(int argc, char const *argv[])
                 
                 fstat(F, &obj);
                 long size = obj.st_size;
-                fprintf(stdout, "%ld\n", size);
+                //fprintf(stdout, "%ld\n", size);
 
                 write(sock, &size, sizeof(long));
 
