@@ -14,6 +14,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#include <pthread.h>
+
 // Server varibili
 int server, client, slen, clen, len;
  
@@ -32,50 +34,8 @@ struct sockaddr_in server_addr, client_addr;
 //
 struct stat obj;
 
-int main(int argc, char const *argv[])
-{   
-    if (argc != 2) {
-        fprintf(stderr,"Usage: %s port\n", argv[0]);
-        exit(-1);
-    }
-
-    port= atoi(argv[1]);
-        
-    if ((server = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        fprintf(stderr, "[-] Socket Error\n");
-        exit(-1);
-    }
-    printf("[+] Socket Done\n");
-
-    bzero((char *) &server_addr, sizeof(server_addr));
-        
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(port);
+void FTPserver(){
     
-    if (bind(server, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0) {
-        fprintf(stderr, "[-] Bind Error\n");
-        exit(-1);
-    }
-    
-    printf("[+] Bind Done\n");
-
-    if (listen(server, 5) < 0) {
-        fprintf(stderr, "[-] Listen Error\n");
-        exit(-1);
-	}
-    
-    printf("[+] Listen Done\n");
-
-    clen = sizeof(client_addr);
-        
-    if ((client = accept(server, (struct sockaddr *) &client_addr, &clen)) < 0) {
-        fprintf(stderr, "[-] Accept Error\n");
-        exit(-1);
-    }
-    
-    printf("[+] Accepted\n");
-
     char *welcome = "Welcome In FTP Server\nUsage:\nPUT - to upload\nGET - to download\nLS - list of file\nQUIT - bye\n";
     write(client, welcome, strlen(welcome));
 
@@ -108,11 +68,8 @@ int main(int argc, char const *argv[])
             fprintf(stdout, "%s\n", buffer);
 
             int F = open(buffer, O_WRONLY | O_CREAT);
-            int check = 0;
 
-            read(client, &check, sizeof(int));
-
-            if((F != -1) && (check != 0)){            
+            if(F != -1){
 
                 long size;
                 read(client, &size, sizeof(long));
@@ -128,7 +85,8 @@ int main(int argc, char const *argv[])
                 fprintf(stdout, "Done\n");
 
             }else{
-                fprintf(stderr, "File not Found on Client!\n");
+                fprintf(stderr, "File not Found!\n");
+                break;
             }
 
         }else if(strncmp(cmd, "GET", 4) == 0){
@@ -147,12 +105,7 @@ int main(int argc, char const *argv[])
 
             int F = open(buffer, O_RDONLY);
             
-            int check = 0;
-            
             if(F != -1){
-
-                check = 1;
-                write(client, &check, sizeof(int));
 
                 fstat(F, &obj);
                 long size = obj.st_size;
@@ -169,7 +122,7 @@ int main(int argc, char const *argv[])
                 fprintf(stdout, "Done\n");
             }else {
                 fprintf(stderr, "File not Found!\n");
-                write(client, &check, sizeof(int));
+                break;
             }
         }else if(strncmp(cmd, "LS", 3) == 0){
         
@@ -211,8 +164,62 @@ int main(int argc, char const *argv[])
             write(client, notCmd, strlen(notCmd));
         }
     }
+
+    close(client);
+    pthread_exit(0);
+}
+
+int main(int argc, char const *argv[])
+{   
+    if (argc != 2) {
+        fprintf(stderr,"Usage: %s port\n", argv[0]);
+        exit(-1);
+    }
+
+    port= atoi(argv[1]);
+        
+    if ((server = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+        fprintf(stderr, "[-] Socket Error\n");
+        exit(-1);
+    }
+    printf("[+] Socket Done\n");
+
+    bzero((char *) &server_addr, sizeof(server_addr));
+        
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+    server_addr.sin_port = htons(port);
+    
+    if (bind(server, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0) {
+        fprintf(stderr, "[-] Bind Error\n");
+        exit(-1);
+    }
+    
+    printf("[+] Bind Done\n");
+
+    if (listen(server, 5) < 0) {
+        fprintf(stderr, "[-] Listen Error\n");
+        exit(-1);
+	}
+    
+    printf("[+] Listen Done\n");
+
+    clen = sizeof(client_addr);
+
+    pthread_t thread;
+
+    while (1){
+        if ((client = accept(server, (struct sockaddr *) &client_addr, &clen)) < 0) {
+            fprintf(stderr, "[-] Accept Error\n");
+            exit(-1);
+        }
+        printf("[+] Accepted\n");
+
+        pthread_create(&thread, NULL, FTPserver, NULL);
+        pthread_detach(thread);
+    }
     
     close(server);
-    close(client);
+    //close(client);
     return 0;
 }

@@ -108,11 +108,8 @@ int main(int argc, char const *argv[])
             fprintf(stdout, "%s\n", buffer);
 
             int F = open(buffer, O_WRONLY | O_CREAT);
-            int check = 0;
 
-            read(client, &check, sizeof(int));
-
-            if((F != -1) && (check != 0)){            
+            if(F != -1){
 
                 long size;
                 read(client, &size, sizeof(long));
@@ -128,7 +125,8 @@ int main(int argc, char const *argv[])
                 fprintf(stdout, "Done\n");
 
             }else{
-                fprintf(stderr, "File not Found on Client!\n");
+                fprintf(stderr, "File not Found!\n");
+                break;
             }
 
         }else if(strncmp(cmd, "GET", 4) == 0){
@@ -147,12 +145,7 @@ int main(int argc, char const *argv[])
 
             int F = open(buffer, O_RDONLY);
             
-            int check = 0;
-            
             if(F != -1){
-
-                check = 1;
-                write(client, &check, sizeof(int));
 
                 fstat(F, &obj);
                 long size = obj.st_size;
@@ -169,7 +162,7 @@ int main(int argc, char const *argv[])
                 fprintf(stdout, "Done\n");
             }else {
                 fprintf(stderr, "File not Found!\n");
-                write(client, &check, sizeof(int));
+                break;
             }
         }else if(strncmp(cmd, "LS", 3) == 0){
         
