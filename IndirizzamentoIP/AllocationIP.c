@@ -1,4 +1,5 @@
 # include <stdio.h>
+#include <stdlib.h>  
 # define NITEMS 100
 # define NIL 0
 # define MAXINT 0x7ffffff

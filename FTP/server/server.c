@@ -129,6 +129,7 @@ int main(int argc, char const *argv[])
 
             }else{
                 fprintf(stderr, "File not Found on Client!\n");
+                remove(buffer);
             }
 
         }else if(strncmp(cmd, "GET", 4) == 0){

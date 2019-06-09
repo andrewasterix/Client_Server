@@ -153,6 +153,7 @@ int main(int argc, char const *argv[])
 
             }else {
                 fprintf(stderr, "File not Found on Server\n");
+                remove(buffer);
             }
 
         }else if(strncmp(cmd, "LS", 3) == 0){
